@@ -1,0 +1,24 @@
+name: flwrlabs/cinic10
+input_shape: [3, 32, 32]
+num_classes: 10
+load_onto_memory: false # note: the slight changes in loss are due to the RNG not being completely sync if loading data onto memory or not
+type: cv
+label_column: label
+train_transforms:
+  _target_: torchvision.transforms.Compose
+  transforms:
+    - _target_: exp.src.data.utils.ToRgb
+    - _target_: torchvision.transforms.RandomHorizontalFlip
+      p: 0.5
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: torchvision.transforms.Normalize
+      mean: [0.47889522, 0.47227842, 0.43047404]
+      std: [0.24205776, 0.23828046, 0.25874835]
+test_transforms:
+  _target_: torchvision.transforms.Compose
+  transforms:
+    - _target_: exp.src.data.utils.ToRgb
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: torchvision.transforms.Normalize
+      mean: [0.47889522, 0.47227842, 0.43047404]
+      std: [0.24205776, 0.23828046, 0.25874835]

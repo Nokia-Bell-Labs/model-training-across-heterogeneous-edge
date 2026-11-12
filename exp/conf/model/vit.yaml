@@ -1,0 +1,8 @@
+_target_: exp.src.model.architectures.vit.ViT
+num_classes: ${data.num_classes}
+dropout: 0.0
+num_layers: 12
+hidden: 384
+mlp_hidden: 384
+head: 12
+use_groupnorm: false # just for consistency. This parameter is effectively ignored

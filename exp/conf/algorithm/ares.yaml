@@ -1,0 +1,4 @@
+name: ares
+layer_allocator_init_args:
+  client_profiling_frequency: 4
+num_server_models: 1

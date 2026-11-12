@@ -1,0 +1,40 @@
+defaults:
+  - model: cnn
+  - data: cifar10
+  - partitioning: iid
+  - optimizer: adam
+  - data_manipulation: cv
+  - algorithm: splitfed_v2
+  - _self_
+general:
+  seed: 16
+  rounds: 1
+  patience: 10
+server:
+  async_: true
+  socket_port: 9094 # port for socket communication (if enabled)
+  port: 8089 # default port
+client:
+  server_address: 0.0.0.0:8089 # should be set at runtime
+  socket_port: ${server.socket_port}
+  init_kwargs: # kwargs that are passed to the model owner client
+    cid: 0 # should be set at runtime
+    min_layers: 2
+    batch_size: 16
+    num_epochs: 1
+strategy:
+  fraction_fit: 1.0
+  fraction_evaluate: 0.0
+  config_client_fit_fn: null
+  min_fit_clients: 1
+  min_evaluate_clients: 0
+  min_available_clients: 1
+  num_server_models: ${algorithm.num_server_models}
+  patience: ${general.patience}
+server_model_servicer:
+  servicer_name: queue
+  num_concat_batches: 1 # how many batches need to be received before sending the data to the model
+  request_group_timeout: 0.8 # if by this time limit not enough data is received, the request is still given to the model
+  exchange_optimizer_states: ${oc.select:algorithm.exchange_optimizer_states,false}
+wandb: false
+experiment_name: ... # helper to search experiments in wandb database

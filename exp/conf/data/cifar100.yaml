@@ -1,0 +1,26 @@
+name: cifar100
+input_shape: [3, 32, 32]
+num_classes: 100
+load_onto_memory: false # note: the slight changes in loss are due to the RNG not being completely sync if loading data onto memory or not
+type: cv
+val_percentage: 0.1
+label_column: fine_label
+train_transforms:
+  _target_: torchvision.transforms.Compose
+  transforms:
+    - _target_: torchvision.transforms.RandomCrop
+      size: 32
+      padding: 4
+    - _target_: torchvision.transforms.RandomHorizontalFlip
+      p: 0.5
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: torchvision.transforms.Normalize
+      mean: [0.5071, 0.4867, 0.4408]
+      std: [0.2675, 0.2565, 0.2761]
+test_transforms:
+  _target_: torchvision.transforms.Compose
+  transforms:
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: torchvision.transforms.Normalize
+      mean: [0.5071, 0.4867, 0.4408]
+      std: [0.2675, 0.2565, 0.2761]

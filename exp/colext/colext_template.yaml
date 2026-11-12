@@ -1,0 +1,52 @@
+project: slwr # project name should not have spaces
+job_name: "SOTA FL experiment"
+
+code:
+  # Path can be omited if colext_config.yaml is in the root folder of the project
+  path: "/home/radovib/dynsl"
+  python_version: "3.10"
+  client:
+    command: >-
+      PYTHONPATH=$PYTHONPATH:. python3 exp/scripts/py/client.py
+      model={{ model_name }}
+      optimizer={{ optimizer }}
+      partitioning={{ partitioning }}
+      model.use_groupnorm={{ use_groupnorm }}
+      client.init_kwargs.batch_size={{ batch_size }}
+      partitioning.num_partitions={{ num_partitions }}
+      client.init_kwargs.num_epochs={{ num_epochs_per_round }}
+      algorithm={{ algorithm }} {% if misc %}{{ misc }}{% endif %} {% if bg_devices %}{{ bg_devices }}{% endif %} {% if bg_configuration %}{{ bg_configuration }}{% endif %} {%- if algo_config %} {{ algo_config }}{%- endif %}
+
+  server:
+    command: >-
+      sed -i '/FLOWER_LOGGER.addHandler(console_handler)/d' /opt/conda/lib/python3.10/site-packages/flwr/common/logger.py && PYTHONPATH=$PYTHONPATH:. python3 -u exp/scripts/py/server.py
+      general.rounds={{ num_rounds }}
+      algorithm={{ algorithm }}
+      optimizer={{ optimizer }}
+      model.use_groupnorm={{ use_groupnorm }}
+      client.init_kwargs.batch_size={{ batch_size }}
+      client.init_kwargs.num_epochs={{ num_epochs_per_round }}
+      algorithm.num_server_models={{ num_server_models }}
+      strategy.min_available_clients=${COLEXT_N_CLIENTS}
+      server.port=8080
+      wandb={{ wandb }}
+      model={{ model_name }}
+      partitioning.num_partitions={{ num_partitions }}
+      partitioning={{ partitioning }}
+      server_model_servicer.num_concat_batches={{ num_concat_batches }}
+      experiment_name={{ experiment_name }}
+      {{ device_listing }} {%- if algo_config %} {{ algo_config }}{%- endif %} {% if misc %}{{ misc }}{% endif %} {% if bg_devices %}{{ bg_devices }}{% endif %} {% if bg_configuration %}{{ bg_configuration }}{% endif %}
+
+clients:
+  - dev_type: JetsonAGXOrin
+    count: {{ num_jao }}
+  - dev_type: JetsonOrinNano
+    count: {{ num_jon }}
+  - dev_type: JetsonNano
+    count: {{ num_jn }}
+  - dev_type: LattePandaDelta3
+    count: {{ num_lp }}
+  - dev_type: JetsonXavierNX
+    count: {{ num_jxn }}
+  - dev_type: OrangePi5B
+    count: {{ num_op }}

@@ -1,0 +1,3 @@
+strategy: cosine
+T_max: ${general.rounds}
+eta_min: 1e-8

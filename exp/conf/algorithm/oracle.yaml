@@ -1,0 +1,7 @@
+name: oracle
+layer_allocator_init_args:
+  device_mapping:
+    {}
+strategy_init_args: {}
+client_adapter_args: {}
+num_server_models: 1

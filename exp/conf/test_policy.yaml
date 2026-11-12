@@ -1,0 +1,30 @@
+defaults:
+  - model: resnet18
+  - optimizer: adam
+  - data: cifar10 # not used, but required to initialize model
+  - profiled_times: ${model}
+  - data_manipulation: cv
+  - algorithm: splitfed_v2
+  - _self_
+general:
+  seed: 10
+
+experiment:
+  num_rounds: 1
+  batch_size: 32
+  device_counts: {}
+    # jao: 12
+    # jon: 12
+    # jxn: 12
+    # lp: 12
+    # op: 100
+client:
+  num_iterations: 30
+  num_classes: ${data.num_classes}
+
+server_model_servicer: # these kwargs are acutally passed to the batching worker manager, but we keep the old name for backward compatibility
+  num_concat_batches: 1 # how many batches need to be received before sending the data to the model
+  request_group_timeout: 0.8 # if by this time limit not enough data is received, the request is still given to the model
+  exchange_optimizer_states: ${oc.select:algorithm.exchange_optimizer_states,false}
+wandb: false
+experiment_name: ... # helper to search experiments in wandb database
